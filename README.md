@@ -19,6 +19,11 @@ The skill is environment-neutral. Bind project-specific build machines, test
 VMs, credentials, commands, and GUI procedures in a private environment profile;
 do not commit secrets to this repository.
 
+On first use, the skill checks for a matching environment profile. If none exists,
+it guides the user through configuration before testing. Newly discovered
+environments are saved only after the user chooses private, project-shared, or
+session-only persistence.
+
 ## Repository layout
 
 ```text

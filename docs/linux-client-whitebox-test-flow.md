@@ -4,7 +4,13 @@ This skill turns white-box testing into an auditable eight-stage workflow:
 
 ```mermaid
 flowchart LR
-    I[intake] --> D[discovery] --> P[plan] --> A[test_assets]
+    C{Profile exists?} -->|no| Q[Ask user to configure]
+    Q --> S{Save new environment?}
+    S -->|private / project / session| V[Read-only preflight]
+    C -->|yes| V
+    V -->|verified| I[intake]
+    V -->|drifted / unavailable| Q
+    I --> D[discovery] --> P[plan] --> A[test_assets]
     A --> R[review]
     R -->|PASS| B[build]
     R -->|FAIL| A
@@ -16,6 +22,10 @@ Each completed stage records evidence and stops for `PROCEED`, `REWORK`, or
 cases remain in the stable part of the record; each execution appends an immutable
 batch. Later batches reuse the environment after a read-only identity and health
 preflight.
+
+Environment setup is a prerequisite before `intake`. A missing profile triggers a
+user interview. A newly discovered environment is never silently persisted: the
+user chooses private reuse, sanitized project sharing, or session-only use.
 
 The public package contains no machine addresses, credentials, private filesystem
 paths, process names, or organization-specific GUI commands. Put those details in

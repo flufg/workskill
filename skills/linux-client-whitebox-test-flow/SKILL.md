@@ -6,8 +6,9 @@ description: Plan, implement, review, build, execute, and report auditable white
 # Linux Client White-box Test Flow
 
 Organize Linux client white-box testing as a recoverable, evidence-backed stage
-flow. Detect the recorded progress first, execute only the current authorized
-stage, then stop for the user's decision.
+flow. Resolve and verify an environment profile before `intake`, detect the
+recorded progress, execute only the current authorized stage, then stop for the
+user's decision.
 
 ## Boundaries
 
@@ -25,7 +26,8 @@ stage, then stop for the user's decision.
 3. For a new or updated run, read
    [references/run-manifest.md](references/run-manifest.md) and
    [references/environment-profile.md](references/environment-profile.md).
-4. Validate and inspect the run manifest:
+4. Create a run manifest from the template if one does not exist, then validate
+   and inspect it:
 
 ```bash
 python scripts/whitebox_flow.py validate <run-manifest.json>
@@ -34,6 +36,36 @@ python scripts/whitebox_flow.py status <run-manifest.json>
 
 Use `currentStage`, `missing`, and `nextRecommended` from the status output.
 Never advance based only on chat history when required evidence is absent.
+
+## Environment bootstrap
+
+Environment bootstrap is a prerequisite, not one of the eight testing stages.
+
+1. Check the run manifest, requirement test record, configured private profile
+   registry, and project profile registry for a matching environment profile.
+2. If no readable profile matches, stop and ask the user for the build/test
+   platform, access method, toolchain/profile, commands or capability providers,
+   supported test capabilities, evidence collection, cleanup, and protected
+   credential references. Never ask for secret values to place in the profile.
+3. Ask where to keep a newly configured environment:
+   - `PRIVATE`: reusable user-private profile outside the public repository;
+   - `PROJECT`: sanitized project profile suitable for sharing, with no secrets;
+   - `SESSION`: use only for this run and do not persist it.
+4. Write or reference the profile only after the user chooses. Record its binding
+   ID, reference, expected fingerprint, capabilities, persistence, and evidence.
+5. For JSON profiles, validate the selected profile before use:
+
+```bash
+python scripts/environment_profile.py validate <environment-profile.json>
+```
+
+6. Run a read-only preflight. Set the manifest environment state to `VERIFIED`
+   only when the observed fingerprint matches and required capabilities exist.
+
+If a previously unknown environment or new fingerprint is encountered, do not
+silently save it. Ask whether to save it as `PRIVATE` or `PROJECT`, use it for
+the current `SESSION`, keep the existing binding, or stop. Do not enter `intake`
+until the selected environment is `VERIFIED`.
 
 ## Stages
 
@@ -76,9 +108,11 @@ already approved `execution` stage. It does not remove checkpoints between stage
 
 ## Environment and records
 
-- Bind one build/test environment to one requirement during `intake`.
+- Resolve and verify an environment profile before `intake`, then bind it to the
+  requirement during `intake`.
 - Reuse that binding for later runs without asking again; perform a read-only
   identity and health preflight each time.
+- Ask before saving every newly discovered environment or fingerprint.
 - Stop only when the environment is unavailable, drifted, lacks a required
   capability, or needs an unapproved mutation.
 - Maintain one test record per requirement. Keep cases in a stable section and

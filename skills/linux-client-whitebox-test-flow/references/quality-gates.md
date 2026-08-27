@@ -7,10 +7,15 @@ reference. The next stage additionally requires the previous stage to be
 `COMPLETED`, an explicit `PROCEED`, an unchanged candidate identity, and its
 specialized prerequisite.
 
+No testing stage may start until the environment state is `VERIFIED`. Missing,
+unavailable, or drifted profiles stop before `intake`; a configured but unverified
+profile must complete a read-only preflight first.
+
 `REWORK` stays at the current checkpoint. `STOP` ends the run.
 
 | Next stage | Required condition |
 |---|---|
+| intake | environment profile is `VERIFIED` |
 | discovery | intake uniquely identifies candidate, record, and environment |
 | plan | risks and existing test/build capabilities are evidenced |
 | test_assets | traceability, commands, pass criteria, and cleanup are approved |

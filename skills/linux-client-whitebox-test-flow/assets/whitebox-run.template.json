@@ -14,10 +14,15 @@
     "gitCommit": null
   },
   "environment": {
-    "bindingId": "replace-with-requirement-environment-binding",
-    "profile": "replace-with-profile",
-    "capabilities": ["build", "test"],
-    "evidence": ["replace-with-environment-profile-reference"]
+    "state": "UNCONFIGURED",
+    "bindingId": null,
+    "profileRef": null,
+    "persistence": "UNDECIDED",
+    "fingerprint": null,
+    "observedFingerprint": null,
+    "capabilities": [],
+    "evidence": [],
+    "reason": ""
   },
   "scope": {
     "testLevels": ["unit", "component", "integration"],

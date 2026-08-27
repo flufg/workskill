@@ -6,11 +6,20 @@ Automation means detecting progress, executing the current authorized stage, and
 collecting evidence. It does not cross a user decision gate. On resume, accept
 only readable evidence tied to the current candidate and environment binding.
 
+## Prerequisite: environment bootstrap
+
+Before `intake`, resolve the requirement's saved profile or discover a matching
+profile using [environment-profile.md](environment-profile.md). If none exists,
+interview the user and configure one. If a new environment is observed, ask
+whether to save it privately, save a sanitized project profile, use it once, keep
+the existing binding, or stop. Run a read-only preflight and continue only with
+environment state `VERIFIED`.
+
 ## 1. Intake
 
 Record the requirement, repository and Git ref, component, change type, candidate
 manifest SHA-256, optional commit, objectives, exclusions, constraints, test-record
-location, and requirement-level environment binding.
+location, and the already verified requirement-level environment binding.
 
 Complete when the candidate, record, scope, and environment are uniquely identified.
 

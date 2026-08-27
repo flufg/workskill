@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "bindingId": "replace-with-stable-binding-id",
+  "displayName": "replace-with-display-name",
+  "scope": "requirement-or-project-scope",
+  "fingerprint": "replace-with-non-secret-environment-fingerprint",
+  "platforms": {
+    "build": "replace-with-build-platform-reference",
+    "test": "replace-with-test-platform-reference"
+  },
+  "toolchainProfile": "replace-with-toolchain-profile",
+  "capabilities": ["build", "test"],
+  "commands": {
+    "build": "replace-with-command-or-capability-reference",
+    "test": "replace-with-command-or-capability-reference",
+    "preflight": "replace-with-read-only-preflight-reference",
+    "cleanup": "replace-with-namespace-scoped-cleanup-reference"
+  },
+  "credentialRefs": [],
+  "evidencePolicy": "replace-with-evidence-location-and-collection-policy",
+  "containsSecrets": false
+}

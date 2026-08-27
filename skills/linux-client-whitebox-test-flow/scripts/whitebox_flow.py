@@ -19,6 +19,8 @@ STAGES = ("intake", "discovery", "plan", "test_assets", "review", "build", "exec
 STATES = {"PENDING", "IN_PROGRESS", "COMPLETED", "BLOCKED"}
 TEST_RESULTS = {"NOT_RUN", "PASS", "FAIL", "ENV_UNAVAILABLE"}
 APPROVALS = {"PROCEED", "REWORK", "STOP"}
+ENVIRONMENT_STATES = {"UNCONFIGURED", "CONFIGURED", "VERIFIED", "DRIFTED", "UNAVAILABLE"}
+ENVIRONMENT_PERSISTENCE = {"UNDECIDED", "PRIVATE", "PROJECT", "SESSION"}
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 
@@ -76,13 +78,37 @@ def validate_manifest(data: dict[str, Any]) -> list[str]:
     if not isinstance(environment, dict):
         errors.append("environment must be an object")
     else:
-        for field in ("bindingId", "profile"):
-            if not _text(environment.get(field)):
-                errors.append(f"environment.{field} must be non-empty")
-        if not _text_list(environment.get("capabilities"), non_empty=True):
-            errors.append("environment.capabilities must be a non-empty string array")
-        if not _text_list(environment.get("evidence"), non_empty=True):
-            errors.append("environment.evidence must be a non-empty string array")
+        environment_state = environment.get("state")
+        persistence = environment.get("persistence")
+        if environment_state not in ENVIRONMENT_STATES:
+            errors.append(f"environment.state must be one of {sorted(ENVIRONMENT_STATES)}")
+        if persistence not in ENVIRONMENT_PERSISTENCE:
+            errors.append(f"environment.persistence must be one of {sorted(ENVIRONMENT_PERSISTENCE)}")
+        if not _text_list(environment.get("capabilities")):
+            errors.append("environment.capabilities must be a string array")
+        if not _text_list(environment.get("evidence")):
+            errors.append("environment.evidence must be a string array")
+
+        configured_states = {"CONFIGURED", "VERIFIED", "DRIFTED", "UNAVAILABLE"}
+        if environment_state in configured_states:
+            for field in ("bindingId", "profileRef", "fingerprint"):
+                if not _text(environment.get(field)):
+                    errors.append(f"environment.{field} must be non-empty when state is {environment_state}")
+            if persistence == "UNDECIDED":
+                errors.append(f"environment.persistence cannot be UNDECIDED when state is {environment_state}")
+        if environment_state in {"CONFIGURED", "VERIFIED"}:
+            if not _text_list(environment.get("capabilities"), non_empty=True):
+                errors.append(f"environment.capabilities must be non-empty when state is {environment_state}")
+            if not _text_list(environment.get("evidence"), non_empty=True):
+                errors.append(f"environment.evidence must be non-empty when state is {environment_state}")
+        if environment_state == "VERIFIED":
+            observed = environment.get("observedFingerprint")
+            if not _text(observed):
+                errors.append("environment.observedFingerprint must be non-empty when state is VERIFIED")
+            elif observed != environment.get("fingerprint"):
+                errors.append("VERIFIED environment requires matching fingerprint and observedFingerprint")
+        if environment_state in {"DRIFTED", "UNAVAILABLE"} and not _text(environment.get("reason")):
+            errors.append(f"environment.reason must be non-empty when state is {environment_state}")
 
     stages = data.get("stages")
     if not isinstance(stages, dict):
@@ -187,6 +213,35 @@ def progress(data: dict[str, Any]) -> dict[str, Any]:
     stages = data["stages"]
     approvals = data.get("approvals", {})
     completed = [name for name in STAGES if stages[name]["state"] == "COMPLETED"]
+    environment = data["environment"]
+    environment_state = environment["state"]
+
+    if environment_state == "UNCONFIGURED":
+        return {
+            "runId": data["runId"], "currentStage": "environment_setup",
+            "currentState": "BLOCKED", "completed": completed,
+            "missing": ["matching environment profile", "user persistence decision"],
+            "nextRecommended": "ask the user to configure an environment profile and choose PRIVATE, PROJECT, or SESSION persistence",
+            "stopForUserDecision": True,
+        }
+    if environment_state == "CONFIGURED":
+        return {
+            "runId": data["runId"], "currentStage": "environment_preflight",
+            "currentState": "PENDING", "completed": completed,
+            "missing": ["read-only environment identity and capability preflight"],
+            "nextRecommended": "run the profile's read-only preflight; mark VERIFIED only if fingerprints and capabilities match",
+            "stopForUserDecision": False,
+        }
+    if environment_state in {"DRIFTED", "UNAVAILABLE"}:
+        action = "decide whether to save or use the newly observed environment" if environment_state == "DRIFTED" else "restore, replace, or stop using the unavailable environment"
+        return {
+            "runId": data["runId"], "currentStage": "environment_setup",
+            "currentState": "BLOCKED", "completed": completed,
+            "missing": [environment.get("reason", environment_state)],
+            "nextRecommended": f"ask the user to {action}",
+            "stopForUserDecision": True,
+        }
+
     active = next((name for name in STAGES if stages[name]["state"] in {"IN_PROGRESS", "BLOCKED"}), None)
     if active:
         stage = stages[active]
