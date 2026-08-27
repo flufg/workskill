@@ -1,0 +1,43 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Skill tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Run unit tests
+        working-directory: skills/linux-client-whitebox-test-flow
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+
+      - name: Validate environment profile template
+        working-directory: skills/linux-client-whitebox-test-flow
+        run: python scripts/environment_profile.py validate assets/environment-profile.template.json
+
+      - name: Validate run manifest template
+        working-directory: skills/linux-client-whitebox-test-flow
+        run: python scripts/whitebox_flow.py validate assets/whitebox-run.template.json
+
+      - name: Verify initial checkpoint
+        working-directory: skills/linux-client-whitebox-test-flow
+        run: |
+          python scripts/whitebox_flow.py status assets/whitebox-run.template.json > status.json
+          python -c "import json; d=json.load(open('status.json')); assert d['currentStage']=='environment_setup' and d['stopForUserDecision'] is True"

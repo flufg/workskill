@@ -33,5 +33,8 @@ docs/        Human-oriented design and usage notes
 
 ## License
 
-No license has been selected yet. Until one is added, normal copyright rules
-apply even though the repository is public.
+Licensed under the [MIT License](LICENSE). You may use, modify, and distribute
+this project while preserving the copyright and license notice.
+
+Contributions are welcome through pull requests. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting changes.
