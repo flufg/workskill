@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "runId": "replace-with-run-id",
+  "target": {
+    "repository": "replace-with-repository-url-or-id",
+    "gitRef": "replace-with-git-ref",
+    "component": "replace-with-component",
+    "changeType": "feature",
+    "requirementRef": "replace-with-requirement-reference",
+    "testRecordRef": "replace-with-test-record-reference"
+  },
+  "candidate": {
+    "sourceManifestSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gitCommit": null
+  },
+  "environment": {
+    "bindingId": "replace-with-requirement-environment-binding",
+    "profile": "replace-with-profile",
+    "capabilities": ["build", "test"],
+    "evidence": ["replace-with-environment-profile-reference"]
+  },
+  "scope": {
+    "testLevels": ["unit", "component", "integration"],
+    "coverage": true,
+    "asanUbsan": true,
+    "tsan": true,
+    "performance": false,
+    "datastore": false,
+    "gui": false
+  },
+  "stages": {
+    "intake": {"state": "PENDING", "summary": "", "evidence": [], "missing": []},
+    "discovery": {"state": "PENDING", "summary": "", "evidence": [], "missing": []},
+    "plan": {"state": "PENDING", "summary": "", "evidence": [], "missing": []},
+    "test_assets": {"state": "PENDING", "summary": "", "evidence": [], "missing": []},
+    "review": {"state": "PENDING", "summary": "", "evidence": [], "missing": [], "decision": "NOT_RUN"},
+    "build": {"state": "PENDING", "summary": "", "evidence": [], "missing": [], "result": "NOT_RUN"},
+    "execution": {"state": "PENDING", "summary": "", "evidence": [], "missing": [], "result": "NOT_RUN"},
+    "report": {"state": "PENDING", "summary": "", "evidence": [], "missing": []}
+  },
+  "approvals": {},
+  "testResults": []
+}

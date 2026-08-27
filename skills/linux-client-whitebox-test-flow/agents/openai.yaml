@@ -1,0 +1,6 @@
+interface:
+  display_name: "Linux Client White-box Test Flow"
+  short_description: "Run auditable staged Linux client white-box tests"
+  default_prompt: "Use $linux-client-whitebox-test-flow to identify the current testing stage and execute only the authorized work."
+policy:
+  allow_implicit_invocation: true
