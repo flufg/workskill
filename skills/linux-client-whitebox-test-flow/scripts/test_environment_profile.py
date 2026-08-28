@@ -19,24 +19,43 @@ def template():
 
 
 class EnvironmentProfileTests(unittest.TestCase):
-    def test_template_is_valid(self):
+    def test_v2_multi_node_template_is_valid(self):
         self.assertEqual([], PROFILE.validate_profile(template()))
 
     def test_secret_bearing_profile_is_rejected(self):
         data = template()
         data["containsSecrets"] = True
-        self.assertIn(
-            "containsSecrets must be false; store only protected credential references",
-            PROFILE.validate_profile(data),
-        )
-
-    def test_preflight_and_cleanup_are_required(self):
-        data = template()
-        data["commands"]["preflight"] = ""
-        data["commands"]["cleanup"] = ""
+        data["nodes"][0]["password"] = "plain-text"
         errors = PROFILE.validate_profile(data)
-        self.assertIn("commands.preflight must be non-empty", errors)
-        self.assertIn("commands.cleanup must be non-empty", errors)
+        self.assertTrue(any("containsSecrets" in error for error in errors))
+        self.assertTrue(any("secret-bearing field" in error for error in errors))
+
+    def test_each_node_has_scoped_protected_credentials(self):
+        data = template()
+        data["nodes"].append({
+            "nodeId": "vm-secondary", "roles": ["test"], "platform": "distro-b",
+            "fingerprint": "vm-secondary-v1", "accessRef": "protected:ssh-secondary",
+            "privilegeRef": "protected:sudo-secondary",
+            "credentialRefs": {"redis": "protected:redis-secondary"},
+            "capabilities": ["test", "redis"],
+            "commands": {"test": "test-provider", "preflight": "preflight-secondary", "cleanup": "cleanup-secondary"},
+        })
+        self.assertEqual([], PROFILE.validate_profile(data))
+        data["nodes"][1]["credentialRefs"]["redis"] = "raw-password"
+        self.assertTrue(any("protected/provider/session" in error for error in PROFILE.validate_profile(data)))
+
+    def test_role_specific_commands_are_required(self):
+        data = template()
+        data["nodes"][0]["commands"]["build"] = ""
+        data["nodes"][0]["commands"]["cleanup"] = ""
+        errors = PROFILE.validate_profile(data)
+        self.assertTrue(any("commands.build" in error for error in errors))
+        self.assertTrue(any("commands.cleanup" in error for error in errors))
+
+    def test_duplicate_node_ids_are_rejected(self):
+        data = template()
+        data["nodes"].append(json.loads(json.dumps(data["nodes"][0])))
+        self.assertTrue(any("duplicate nodeId" in error for error in PROFILE.validate_profile(data)))
 
 
 if __name__ == "__main__":

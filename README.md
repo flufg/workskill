@@ -4,7 +4,7 @@ Reusable Codex skills for engineering workflows.
 
 ## Skills
 
-- [`linux-client-whitebox-test-flow`](skills/linux-client-whitebox-test-flow/) — auditable, checkpointed white-box testing for Linux client changes.
+- [`linux-client-whitebox-test-flow`](skills/linux-client-whitebox-test-flow/) — recoverable, auditable Linux client testing with supplemental cycles, release bundles, multi-node Profiles, and checkpointed or continuous authorization.
 
 ## Install a skill
 

@@ -36,6 +36,10 @@ jobs:
         working-directory: skills/linux-client-whitebox-test-flow
         run: python scripts/whitebox_flow.py validate assets/whitebox-run.template.json
 
+      - name: Audit initial run manifest
+        working-directory: skills/linux-client-whitebox-test-flow
+        run: python scripts/whitebox_flow.py audit assets/whitebox-run.template.json
+
       - name: Verify initial checkpoint
         working-directory: skills/linux-client-whitebox-test-flow
         run: |

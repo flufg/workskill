@@ -1,22 +1,36 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "bindingId": "replace-with-stable-binding-id",
   "displayName": "replace-with-display-name",
   "scope": "requirement-or-project-scope",
   "fingerprint": "replace-with-non-secret-environment-fingerprint",
-  "platforms": {
-    "build": "replace-with-build-platform-reference",
-    "test": "replace-with-test-platform-reference"
-  },
   "toolchainProfile": "replace-with-toolchain-profile",
   "capabilities": ["build", "test"],
-  "commands": {
-    "build": "replace-with-command-or-capability-reference",
-    "test": "replace-with-command-or-capability-reference",
-    "preflight": "replace-with-read-only-preflight-reference",
-    "cleanup": "replace-with-namespace-scoped-cleanup-reference"
+  "nodes": [
+    {
+      "nodeId": "replace-with-node-id",
+      "roles": ["build", "test"],
+      "platform": "replace-with-platform-identity",
+      "fingerprint": "replace-with-node-fingerprint",
+      "accessRef": "protected:replace-with-access-reference",
+      "privilegeRef": null,
+      "credentialRefs": {
+        "ssh": "protected:replace-with-ssh-reference"
+      },
+      "capabilities": ["build", "test"],
+      "commands": {
+        "build": "replace-with-command-or-capability-reference",
+        "test": "replace-with-command-or-capability-reference",
+        "preflight": "replace-with-read-only-preflight-reference",
+        "cleanup": "replace-with-namespace-scoped-cleanup-reference"
+      }
+    }
+  ],
+  "evidencePolicy": {
+    "location": "replace-with-evidence-location-policy",
+    "encoding": "UTF-8",
+    "decisionFormat": "JSON",
+    "locale": "C.UTF-8"
   },
-  "credentialRefs": [],
-  "evidencePolicy": "replace-with-evidence-location-and-collection-policy",
   "containsSecrets": false
 }

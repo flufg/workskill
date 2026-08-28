@@ -2,110 +2,127 @@
 
 ## Principle
 
-Automation means detecting progress, executing the current authorized stage, and
-collecting evidence. It does not cross a user decision gate. On resume, accept
-only readable evidence tied to the current candidate and environment binding.
+Automation detects recorded progress, executes authorized work, and appends
+evidence. The requirement ledger is durable across initial execution, retest, and
+supplemental cycles. Never rewrite a prior cycle to make the current state look
+cleaner.
 
-## Prerequisite: environment bootstrap
+## Prerequisites
 
-Before `intake`, resolve the requirement's saved profile or discover a matching
-profile using [environment-profile.md](environment-profile.md). If none exists,
-interview the user and configure one. If a new environment is observed, ask
-whether to save it privately, save a sanitized project profile, use it once, keep
-the existing binding, or stop. Run a read-only preflight and continue only with
-environment state `VERIFIED`.
+Before `intake`:
 
-## 1. Intake
+1. Resolve the requirement's saved Profile or configure one using
+   [environment-profile.md](environment-profile.md).
+2. Run read-only preflight on every participating node and require environment
+   state `VERIFIED`.
+3. Resolve every component in the release bundle and require bundle state
+   `VERIFIED`.
+4. Record `CHECKPOINTED` or an explicit, scoped `CONTINUOUS` grant.
 
-Record the requirement, repository and Git ref, component, change type, candidate
-manifest SHA-256, optional commit, objectives, exclusions, constraints, test-record
-location, and the already verified requirement-level environment binding.
+If a Profile, fingerprint, node, credential reference, or component is new, stop
+for the relevant user decision. Do not silently persist or substitute it.
 
-Complete when the candidate, record, scope, and environment are uniquely identified.
+## Initial cycle
 
-## 2. Discovery
+### 1. Intake
 
-Read the requirement, diff, implementation, and interfaces. Locate tests, fixtures,
-fakes, build files, and CI entrypoints. Identify boundaries such as filesystem,
-network, IPC, database/cache, service manager, kernel, GUI, time, randomness,
-threads, and processes. Map high-risk paths including permission failures, timeouts,
-retries, partial I/O, concurrency, cancellation, crash recovery, and cleanup.
+Record the requirement, repository and Git ref, primary component, full release
+bundle, objectives, exclusions, constraints, test-record location, environment
+nodes, and authorization mode. Complete only when the bundle, record, scope, and
+environment are uniquely identified.
 
-Do not start a build during discovery.
+### 2. Discovery
 
-## 3. Plan
+Read the requirement, diff, implementation, and interfaces. Locate tests,
+fixtures, build files, CI, package producers, and consumers. Identify filesystem,
+network, IPC, datastore, service, kernel, GUI, time, thread, and process
+boundaries. For any contract or persisted value changed across versions, mark
+compatibility as applicable.
 
-Create a matrix with these fields:
+### 3. Plan
 
-| Field | Meaning |
-|---|---|
-| requirement | Requirement or defect item |
-| risk | Failure mode and impact |
-| layer | unit/component/integration/system/performance |
-| case | Input, action, expected behavior |
-| observability | Return value, state, log, event, file, or metric |
-| command | Reproducible command or planned entrypoint |
-| pass criteria | Explicit success condition |
-| cleanup | Temporary resources and rollback |
+Create a requirement-risk-test matrix with case ID, layer, input/action, expected
+behavior, observability, command, pass criteria, cleanup, environment node, and
+release components. Cover normal, boundary, failure, recovery, concurrency, and
+lifecycle behavior.
 
-Cover normal, boundary, failure, recovery, concurrency, and lifecycle behavior.
-Specify coverage reporting, independent sanitizer variants, optional performance
-method, environment capabilities, and read-only diagnostic evidence. Every high
-risk needs an executable test or a justified gap.
+When compatibility applies, generate the four producer-consumer combinations:
+old/old, old/new, new/old, and new/new. Every high risk needs an executable case
+or a justified gap. Domain-specific procedures belong to separately selected
+specialist capabilities; this flow records their scope, authorization, results,
+and evidence without embedding their mechanics.
 
-## 4. Test assets
+### 4. Test assets
 
-Reuse the repository's framework. Implement small deterministic tests, isolated
-temporary resources, dynamic ports, explicit process cleanup, and minimal seams.
-Inject relevant failures such as interruption, would-block, no-space, denied access,
-timeout, or partial I/O. Register tests with existing build/test entrypoints and
-perform safe local checks.
+Reuse the repository framework. Implement deterministic tests, isolated run
+namespaces, dynamic resources, explicit cleanup, and minimal seams. Validate
+package fixtures before deployment. Record product defects instead of silently
+changing semantics.
 
-Record product defects instead of silently changing product semantics.
+### 5. Review
 
-## 5. Review
+Review public-behavior assertions, fixture validity, compatibility coverage,
+registration, deterministic cleanup, fault-injection reachability, credential
+protection, and evidence encoding. Only `PASS` permits build.
 
-Review whether assertions observe public behavior, tests duplicate product logic,
-mocks or seams are excessive, concurrency and cleanup are deterministic, fault
-injection reaches the intended path, registration and commands are correct, and
-logs could expose secrets. Record `PASS` or `FAIL`; unresolved blockers return to
-`test_assets`.
+### 6. Build
 
-## 6. Build
+Pass the release bundle, build scope, environment nodes, variants, expected
+artifacts, and commands to the build capability. The receipt identifies every
+component, source/artifact hash, environment, command, exit code, and log. Stop
+on partial or mismatched bundles.
 
-Pass the candidate identity, build scope, change type, required test/sanitizer
-variants, expected artifacts, environment binding, and planned test commands to
-the selected build capability. The receipt must identify environment, source,
-commands, exit code, artifact hashes, and logs. Stop on build failure.
+### 7. Execution
 
-## 7. Execution
+Append an `INITIAL` cycle before the first command. Bind it to bundle ID,
+environment binding/fingerprint, and reason. Within the authorized stage:
 
-Within one approved execution stage:
+1. Verify component artifacts and node identities.
+2. Run fast tests, then component/integration and compatibility cases.
+3. Generate coverage and independent sanitizer evidence.
+4. Run applicable fault, lifecycle, performance, service, datastore, GUI, or other approved specialist cases.
+5. Record structured results, first symptoms, and reason categories.
+6. Perform exact cleanup and read state back.
 
-1. Preflight candidate artifact and environment identity.
-2. Run fast unit tests.
-3. Run component and integration tests.
-4. Generate coverage evidence.
-5. Run ASan+UBSan independently.
-6. Run TSan independently.
-7. Run applicable fault, concurrency, lifecycle, and leak tests.
-8. Run authorized performance, stress, capacity, or endurance tests.
-9. Run applicable service, datastore, or GUI scenarios through the bound profile.
-10. Clean up and verify cleanup by reading state back.
+Do not automatically fix, rebuild, mutate fixtures, or retest after a failure.
 
-Record the first failure symptom and raw evidence. Do not automatically fix,
-rebuild, or retest.
+### 8. Report
 
-## 8. Report
+Update the structured test-record index, run `audit`, then append a report
+revision covering every completed unreported cycle. Append the same revision and
+batch ID to the requirement test record and its index.
+Set lifecycle to `REPORTED`; do not mark the ledger `CLOSED` merely because a
+report exists.
 
-Append the candidate, environment, traceability matrix, exact commands, timestamps,
-exit codes, results, coverage, sanitizer output, performance data, screenshots,
-cleanup, gaps, and residual risks to the current run batch. Do not overwrite older
-batches or automatically publish code.
+## Reopen, retest, and supplement
 
-## Failure branches
+After a report, authorized additional testing does not repeat intake through
+review unless the affected scope, product/test assets, environment, or release
+bundle changed.
 
-- `FAIL`: collect read-only evidence and offer fix/retest, adjust test, accept and report, or stop.
-- `ENV_UNAVAILABLE`: record the missing capability and recovery action; it is neither product failure nor pass.
-- Limit the same-root-cause repair/retry loop to three user-authorized rounds.
-- A candidate change invalidates affected build/execution evidence and restarts from the earliest affected stage.
+1. Set lifecycle `REOPENED`, increment revision, and record the reason.
+2. Append `RETEST` for a repeated case after an authorized correction, or
+   `SUPPLEMENTAL` for newly added coverage.
+3. Execute only the affected matrix against the bound bundle and environment.
+4. Audit, append a new report revision, and update the test record.
+5. Return to `REPORTED` or explicitly close.
+
+A changed bundle moves the prior verified snapshot to `releaseBundleHistory` and
+invalidates its evidence only for current conclusions; it never deletes the old
+bundle or cycles. Restart from the earliest affected stage and bind every new
+pending/active cycle to the current bundle.
+
+## Failure and pause branches
+
+- `FAIL`: classify as product, compatibility, fixture, infrastructure, or
+  environment; collect read-only evidence and request a decision.
+- `ENV_UNAVAILABLE`: record missing capability and recovery evidence; it is not pass.
+- Cleanup failure: set cycle result `FAIL`, keep `cleanupVerified=false`, and stop.
+- Environment or bundle drift: stop before any further command.
+- Limit one root-cause repair/retry loop to three authorized rounds.
+
+## Close
+
+Set lifecycle `CLOSED` only after audit proves that all completed cycles are
+covered by report revisions, test-record batch evidence exists, local hashes
+match, remote receipts have current verification records, and cleanup succeeded.

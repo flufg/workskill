@@ -2,57 +2,66 @@
 
 ## General gates
 
-Every completed stage needs a non-empty summary and at least one readable evidence
-reference. The next stage additionally requires the previous stage to be
-`COMPLETED`, an explicit `PROCEED`, an unchanged candidate identity, and its
-specialized prerequisite.
+Every completed stage needs a summary and evidence IDs present in the evidence
+index. Testing requires a `VERIFIED` environment and release bundle. A transition
+needs either stage-specific `PROCEED` or a matching `CONTINUOUS` grant.
 
-No testing stage may start until the environment state is `VERIFIED`. Missing,
-unavailable, or drifted profiles stop before `intake`; a configured but unverified
-profile must complete a read-only preflight first.
-
-`REWORK` stays at the current checkpoint. `STOP` ends the run.
+`CONTINUOUS` must pause on failure, candidate change, environment drift,
+destructive action, missing permission, unavailable credential, cleanup failure,
+or scope expansion. It does not authorize those actions.
 
 | Next stage | Required condition |
 |---|---|
-| intake | environment profile is `VERIFIED` |
-| discovery | intake uniquely identifies candidate, record, and environment |
-| plan | risks and existing test/build capabilities are evidenced |
-| test_assets | traceability, commands, pass criteria, and cleanup are approved |
-| review | test assets are implemented and registered |
+| intake | Profile and complete release bundle are `VERIFIED` |
+| discovery | requirement, record, bundle, environment, and authorization are unique |
+| plan | risks, component contracts, and capabilities are evidenced |
+| test_assets | traceability, compatibility, commands, criteria, and cleanup are approved |
+| review | test assets and fixtures are implemented and registered |
 | build | review decision is `PASS` |
-| execution | build is `PASS` and artifact/environment identities match |
-| report | execution has terminal results and raw evidence |
+| execution | complete bundle build is `PASS`; artifact/node identities match |
+| report | terminal cycle results, cleanup readback, and raw evidence exist |
+| close | audit covers every completed cycle and report/test-record revision |
 
-## Four result states
+## Result and cause model
 
-- `NOT_RUN`: not executed; never report it as pass.
-- `PASS`: command, assertions, metrics, and evidence satisfy the pass criteria.
-- `FAIL`: behavior, assertion, sanitizer, performance gate, or cleanup failed.
-- `ENV_UNAVAILABLE`: a required environment capability is absent; neither pass nor product failure.
+- `NOT_RUN`: not executed and carries a reason.
+- `PASS`: command, assertions, metrics, and evidence satisfy criteria.
+- `FAIL`: behavior, sanitizer, performance, fixture, compatibility, or cleanup failed.
+- `ENV_UNAVAILABLE`: required environment capability is absent.
 
-## Minimum applicability review
+For `FAIL` and `ENV_UNAVAILABLE`, add one `reasonCategory`: `PRODUCT`,
+`COMPATIBILITY`, `FIXTURE`, `INFRA`, or `ENVIRONMENT`. Domain-specific
+observations remain separate annotations and never replace the four-state result.
 
-Check whether each category applies: core unit logic, invalid/boundary inputs,
-filesystem/network/IPC/datastore failure injection, concurrency and cancellation,
-start/stop and repeated lifecycle, component/integration paths, coverage,
-ASan+UBSan, TSan, performance/stress/capacity/endurance, and GUI behavior. Record
-why an omitted category is not applicable.
+## Compatibility gate
+
+When a value crosses a version boundary through IPC, persistence, a datastore,
+package metadata, or a service protocol, cover old/old, old/new, new/old, and
+new/new. Unknown-value behavior must be explicit. Missing any combination blocks
+the plan gate unless a documented exception is approved.
 
 ## Safety gates
 
-- Resolve credentials only through the target environment's protected mechanism;
-  never put secret values in manifests, commands, logs, or reports.
-- Scope injected data and cleanup to the current run namespace and verify cleanup.
-- Follow the bound profile for GUI sessions; do not invent remote GUI launch methods.
-- Do not install dependencies, mutate shared configuration, restart environments,
-  fix product code, publish, or push without separate authorization.
+- Resolve credentials on the target node through protected references. Never put
+  secret values in profiles, manifests, commands, evidence, or reports.
+- Scope injection and cleanup to the run namespace and verify cleanup by readback.
+- Follow each node Profile for GUI, privilege, datastore, and access methods.
+- A destructive fixture needs separate authorization, a recoverable baseline,
+  the smallest isolated target, an explicit rollback plan, and recovery proof.
+- Do not install, change shared configuration, restart, fix product code,
+  publish, or push without separate authorization.
 
-## Minimum evidence
+## Evidence gate
 
-- Candidate source-manifest SHA-256 and Git identity.
-- Requirement/risk/test matrix and test-record batch ID.
-- Review decision.
-- Environment binding, preflight, build receipt, and artifact hashes.
-- Exact commands, working directory, timestamps, exit codes, and test logs.
-- Coverage, sanitizer output, performance data, screenshots, and cleanup readback when applicable.
+Index evidence with a stable ID. Local files require SHA-256; remote receipts
+require a verification timestamp and `VALID`, `STALE`, or `UNAVAILABLE` status.
+Prefer UTF-8 JSON decisions under a known
+locale. Every cycle records exact commands, node and bundle identities,
+timestamps, exit codes, results, logs, and cleanup. Every report revision records
+covered cycle IDs, a unique test-record batch ID, and record evidence. A hashed
+`RECORD_INDEX` sidecar mirrors the requirement document's revision/batch/cycle
+coverage so audit can detect drift in either direction.
+
+Run `audit` before report and close. Hash mismatch, missing local evidence,
+unreported completed cycles, or cleanup failure blocks completion. Remote
+evidence warnings require external revalidation before formal close.

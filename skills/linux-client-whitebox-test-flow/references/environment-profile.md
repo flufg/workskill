@@ -1,79 +1,58 @@
-# Environment profile discovery and persistence
+# Environment Profile discovery and persistence
 
-An environment profile is required before the eight testing stages start. The
-public skill contains only the schema and decision rules; real addresses, private
-paths, access methods, and organization-specific procedures stay outside it.
+Profiles are requirement-reusable, multi-node descriptions that contain only
+protected references. Real addresses, private paths, access methods, and secrets
+stay outside the public skill.
 
-## Discovery order
+## Discovery and reuse
 
-Check, in order:
+Check the manifest Profile reference, requirement test record, user-approved
+private registry, then sanitized project registry. Do not search arbitrary home
+or system directories. Reuse the requirement binding without asking again, but
+run read-only fingerprint, health, capability, and credential-reference
+preflight for every cycle.
 
-1. `environment.profileRef` in the current run manifest;
-2. the environment binding recorded in the requirement's test record;
-3. a user-configured private registry, conventionally
-   `$CODEX_HOME/environment-profiles/` when available;
-4. a project registry such as `.codex/environment-profiles/` containing only
-   sanitized, shareable profiles.
+If no Profile matches, ask only for stable binding/scope, participating nodes and
+roles, platform/toolchain identity, capability entrypoints, evidence/cleanup,
+and protected access, privilege, and datastore references. Never ask for secret
+values to store in JSON.
 
-Do not search arbitrary home or system directories. A matching profile must be
-readable and its expected fingerprint must match the observed environment.
+## Multi-node model
 
-## Missing profile interview
+Start from `assets/environment-profile.template.json`. Each build VM, test VM,
+datastore host, GUI target, or other relevant node has its own:
 
-If no profile matches, stop before `intake` and ask only for information that
-cannot be discovered safely:
+- node ID, roles, platform identity, and fingerprint;
+- protected access and optional privilege reference;
+- named SSH/datastore/service credential references;
+- capabilities and role-specific commands;
+- read-only preflight and run-scoped cleanup commands.
 
-- stable name and intended scope;
-- build and test platform identities and access method;
-- toolchain/profile identifiers;
-- build/test commands or capability providers;
-- coverage, sanitizer, performance, service, datastore, and GUI capabilities;
-- artifact identity and evidence collection;
-- namespace-scoped setup and cleanup;
-- read-only health and drift checks;
-- protected credential references, never secret values.
+Do not use one global Redis, SSH, or privilege alias for machines with different
+authentication sources.
 
-Create the minimum profile that supports the approved scope, then perform a
-read-only preflight.
+## Persistence decision
 
-## Save decision for a new environment
+For an unknown environment or fingerprint, ask the user to choose:
 
-Whenever an unknown environment or new fingerprint is observed, ask the user to
-choose one of these outcomes before writing it anywhere:
-
-- `PRIVATE`: persist in a user-approved private registry for later requirements;
-- `PROJECT`: persist a sanitized profile in the project for team reuse;
-- `SESSION`: reference it only in the current run and do not persist it;
+- `PRIVATE`: reusable private Profile outside the public repository;
+- `PROJECT`: sanitized, shareable Profile with protected references only;
+- `SESSION`: current run only;
 - keep the existing binding or stop.
 
-For `PROJECT`, reject secret values, private keys, tokens, passwords, private
-machine addresses, and organization-only paths. Store protected credential aliases
-or provider references instead. For `PRIVATE`, secrets should still remain in a
-credential manager; the profile stores only references.
+Only write or replace a Profile after that decision. Installing dependencies,
+changing configuration, restarting a shared node, or replacing a requirement
+binding needs separate authorization.
 
-## State and fingerprint
+## State and validation
 
-The manifest uses these states:
+Manifest states remain `UNCONFIGURED`, `CONFIGURED`, `VERIFIED`, `DRIFTED`, and
+`UNAVAILABLE`. Only `VERIFIED` permits testing. A newly observed node or
+fingerprint is drift until accepted and preflighted.
 
-- `UNCONFIGURED`: no usable profile has been selected; ask the user to configure one.
-- `CONFIGURED`: a profile was selected or created but has not passed preflight.
-- `VERIFIED`: observed fingerprint matches and required capabilities are available.
-- `DRIFTED`: observed identity differs from the profile; ask how to handle the new environment.
-- `UNAVAILABLE`: the profile cannot currently provide the required environment.
-
-Only `VERIFIED` permits `intake`. Later runs reuse the requirement binding without
-asking again, but always repeat the read-only preflight. Installing dependencies,
-changing configuration, restarting a shared environment, or replacing the binding
-requires separate authorization.
-
-Start new profiles from `assets/environment-profile.template.json`.
-
-For JSON profiles, run this structural and secret-flag gate before selecting the
-profile:
+Profiles require UTF-8 structured JSON decision evidence and reject secret-like
+fields and raw credential values. Validate before selection:
 
 ```bash
 python scripts/environment_profile.py validate profile.json
 ```
-
-This validator is read-only. It rejects incomplete profiles and any profile that
-declares `containsSecrets: true`; it cannot replace an external secret scanner.

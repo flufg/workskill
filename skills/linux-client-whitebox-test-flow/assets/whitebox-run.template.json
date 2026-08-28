@@ -1,18 +1,29 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runId": "replace-with-run-id",
+  "lifecycle": {
+    "state": "ACTIVE",
+    "revision": 1,
+    "reopenReason": "",
+    "closedAt": null
+  },
   "target": {
     "repository": "replace-with-repository-url-or-id",
     "gitRef": "replace-with-git-ref",
-    "component": "replace-with-component",
+    "component": "replace-with-primary-component",
     "changeType": "feature",
     "requirementRef": "replace-with-requirement-reference",
     "testRecordRef": "replace-with-test-record-reference"
   },
-  "candidate": {
-    "sourceManifestSha256": "0000000000000000000000000000000000000000000000000000000000000000",
-    "gitCommit": null
+  "releaseBundle": {
+    "state": "UNRESOLVED",
+    "bundleId": null,
+    "bundleSha256": null,
+    "components": [],
+    "evidence": [],
+    "reason": ""
   },
+  "releaseBundleHistory": [],
   "environment": {
     "state": "UNCONFIGURED",
     "bindingId": null,
@@ -20,9 +31,26 @@
     "persistence": "UNDECIDED",
     "fingerprint": null,
     "observedFingerprint": null,
+    "nodeIds": [],
     "capabilities": [],
     "evidence": [],
     "reason": ""
+  },
+  "authorization": {
+    "mode": "CHECKPOINTED",
+    "grantId": null,
+    "grantedAt": null,
+    "scope": [],
+    "pauseOn": [
+      "FAILURE",
+      "CANDIDATE_CHANGE",
+      "ENVIRONMENT_DRIFT",
+      "DESTRUCTIVE_ACTION",
+      "MISSING_PERMISSION",
+      "CREDENTIAL_UNAVAILABLE",
+      "CLEANUP_FAILURE",
+      "SCOPE_EXPANSION"
+    ]
   },
   "scope": {
     "testLevels": ["unit", "component", "integration"],
@@ -31,8 +59,10 @@
     "tsan": true,
     "performance": false,
     "datastore": false,
-    "gui": false
+    "gui": false,
+    "compatibility": false
   },
+  "compatibilityMatrix": [],
   "stages": {
     "intake": {"state": "PENDING", "summary": "", "evidence": [], "missing": []},
     "discovery": {"state": "PENDING", "summary": "", "evidence": [], "missing": []},
@@ -44,5 +74,8 @@
     "report": {"state": "PENDING", "summary": "", "evidence": [], "missing": []}
   },
   "approvals": {},
-  "testResults": []
+  "executionCycles": [],
+  "reportRevisions": [],
+  "testRecordIndexEvidence": null,
+  "evidenceIndex": []
 }
