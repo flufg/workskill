@@ -35,6 +35,11 @@ skills/      Installable skill packages
 docs/        Human-oriented design and usage notes
 ```
 
+## Design notes
+
+- [Linux client white-box test flow](docs/linux-client-whitebox-test-flow.md)
+- [Linux client Bug troubleshooting](docs/linux-client-bug-troubleshooter.md)
+
 ## License
 
 Licensed under the [MIT License](LICENSE). You may use, modify, and distribute
