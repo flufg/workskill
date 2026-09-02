@@ -1,0 +1,7 @@
+interface:
+  display_name: "构建与测试 Linux 客户端"
+  short_description: "发现或配置 Profile，安全构建并测试 VMware 中的 Linux 客户端"
+  default_prompt: "Use $build-client to resolve or configure the environment Profile, then perform only my explicitly requested VM power, build, or test action with identity, queue, receipt, artifact, and power-state evidence."
+
+policy:
+  allow_implicit_invocation: false
