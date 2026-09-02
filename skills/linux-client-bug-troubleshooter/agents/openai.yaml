@@ -1,0 +1,4 @@
+interface:
+  display_name: "Linux 客户端 Bug 排查"
+  short_description: "通过材料、SSH 或远程桌面定位 Bug，输出清单、脚本、方案与报告"
+  default_prompt: "使用 $linux-client-bug-troubleshooter 通过离线材料、SSH 或当次授权的向日葵/ToDesk 会话只读排查 Bug；材料不足时先向工程师输出收集清单，必要时生成采集脚本，再输出根因、待决策方案和分析报告。不保存客户环境或凭据，不修改产品代码。"

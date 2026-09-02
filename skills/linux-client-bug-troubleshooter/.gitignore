@@ -1,0 +1,27 @@
+# Generated case artifacts
+bug-reports/
+evidence/
+captures/
+collection-output/
+
+# Common sensitive or transient diagnostic artifacts
+.env
+.env.*
+*.log
+*.pcap
+*.pcapng
+*.core
+core
+core.*
+*.dmp
+*.dump
+*.tar
+*.tar.gz
+*.zip
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.tmp

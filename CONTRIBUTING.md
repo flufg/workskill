@@ -20,7 +20,10 @@ Never commit:
 - private machine addresses, personal paths, or internal hostnames;
 - organization-only build, VM, GUI, or datastore procedures;
 - real environment profiles containing private infrastructure details;
-- test logs, screenshots, or fixtures containing confidential data.
+- customer IPs, hostnames, account names, SSH details, Sunlogin/ToDesk device IDs,
+  verification codes, temporary passwords, or internal paths;
+- test or Bug logs, screenshots, core files, packet captures, collection bundles,
+  reports, or fixtures containing confidential data.
 
 Public environment profiles must be sanitized and keep only protected credential
 references. Use obvious fictional values in templates and examples.
@@ -42,6 +45,13 @@ python scripts/whitebox_flow.py status assets/whitebox-run.template.json
 
 The unconfigured run template should stop at `environment_setup`. Add or update
 tests for every behavior change.
+
+For `skills/linux-client-bug-troubleshooter`, validate the skill metadata and
+JSON evaluation cases, check all linked references, and scan the complete package
+for credentials, customer identifiers, private addresses, and personal paths.
+Changes to access-channel rules, collection scripts, or customer-data handling
+must preserve the per-case authorization boundary and must not introduce a
+persistent customer environment registry.
 
 ## License for contributions
 

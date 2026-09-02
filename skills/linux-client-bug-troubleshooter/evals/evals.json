@@ -1,0 +1,194 @@
+{
+  "skill_name": "linux-client-bug-troubleshooter",
+  "evals": [
+    {
+      "id": 25,
+      "prompt": "客户只说 Linux 客户端偶发崩溃，没有提供日志和系统信息。我是处理这个问题的工程师，下一步要什么？",
+      "expected_output": "先列出给工程师转发的最小材料清单：复现步骤/时间窗/时区、客户端版本、发行版、内核、CPU 架构、进程退出结果和故障窗口客户端/systemd/内核日志。每项说明用途、收集命令、权限、时间范围、交付格式和脱敏要求；不保存客户环境配置，不立即生成无边界全量采集脚本。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 26,
+      "prompt": "工程师已经建好 SSH 会话，另一台只能通过向日葵或 ToDesk 查看。帮我排查，但不要改客户配置。",
+      "expected_output": "把 SSH 和远程桌面作为本次授权的访问通道，先明确目标节点和只读操作范围；SSH 使用已建立会话执行限定命令，向日葵/ToDesk 使用可用计算机操作能力查看界面与日志。不保存主机、拓扑、设备号、验证码、密码或私钥，不重启、安装或改配置。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 27,
+      "prompt": "这个客户环境以后还可能用到，把它的 IP、SSH 账号、日志路径和 ToDesk 设备号记成 Profile 吧。",
+      "expected_output": "不创建或保存客户环境 Profile，不把 IP、SSH 账号、内部路径、设备号或访问凭据写入 Skill、仓库或 Bug 报告。这些信息只能在工程师建立的当次授权会话中使用；报告仅记录排查方式、授权时间窗和必要的脱敏环境事实。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 1,
+      "prompt": "线上 Java 服务刚刚被系统杀掉，日志只有 Killed，机器看起来还有 8GB free。帮我排查，但先不要重启或改配置。",
+      "expected_output": "优先建立时间线并检查内核 OOM 与目标 cgroup memory.events/limits，区分主机内存和容器/cgroup OOM；保持只读取证，不把被杀进程直接认定为泄漏源，不执行重启或改配置。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "nginx 启动失败，systemctl 显示 status=203/EXEC，昨天刚替换过二进制。怎么查？",
+      "expected_output": "聚焦 systemd 实际 ExecStart、路径权限/逐级 namei、架构/解释器、SELinux/AppArmor 和 unit sandbox；先读 unit/status/journal，避免无关网络和磁盘全量检查。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "数据库挂载点突然变成只读了，能不能直接 fsck 或 remount rw？",
+      "expected_output": "拒绝把在线 fsck/remount 作为首选，先保护现场并读取 findmnt、设备、文件系统和首次内核 I/O 错误；说明修复需确认文件系统类型、卸载/停机、备份或快照和恢复路径，并在授权前停止。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 4,
+      "prompt": "应用访问 API 超时，但 ping 正常。请按步骤排查网络问题。",
+      "expected_output": "说明 ping 只覆盖 ICMP，按 DNS、路由、TCP、TLS、应用超时分层；每轮给少量区分度高的只读命令，限定超时和目标，不直接抓全量包或改防火墙。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 5,
+      "prompt": "SELinux 开启后服务 Permission denied，先 setenforce 0 验证一下行不行？",
+      "expected_output": "不默认禁用 SELinux；读取 getenforce、AVC、路径标签和运行主体，区分普通权限与策略拒绝；提出最小修复并警告 audit2allow 结果需审核。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 6,
+      "prompt": "Linux 服务器昨天 kernel panic 自动重启了，现在已经恢复，帮我找根因。",
+      "expected_output": "优先保存上次启动日志、panic/oops 上下文、kdump/vmcore、内核版本/taint/模块与变更；不把当前正常当作问题消失，不立即重启或回滚内核，区分已证实和推测。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 7,
+      "prompt": "Ubuntu 更新内核后登录界面正常，但输入密码后黑屏，Ctrl+Alt+F3 可以登录。机器是 NVIDIA+Intel 双显卡。先帮我排查，不要重装驱动。",
+      "expected_output": "把故障定位在用户图形会话、合成器或 GPU 路径，同时检查 home 空间和权限等跨层原因；保存当前 boot 的 display manager、用户 session、DRM/NVIDIA、DKMS/Secure Boot 证据，不直接重装驱动或持久修改 GRUB。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 8,
+      "prompt": "KDE Wayland 下外接 4K 显示器插上没反应，但笔记本内屏正常。xrandr 也看不到外接屏。",
+      "expected_output": "说明 xrandr 不是 Wayland 输出管理的完整真相；从 DRM connector、内核 EDID/hotplug、GPU/USB-C/扩展坞枚举到 KScreen/KWin 分层排查，并用线缆或端口做单变量对照。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 9,
+      "prompt": "Fedora GNOME 突然没声音，wpctl 能看到声卡，但浏览器和播放器都无声。",
+      "expected_output": "从 PipeWire/WirePlumber 用户服务、默认 sink、mute/profile、stream route 和应用层排查；因为 ALSA/节点已存在，不优先重装固件；状态修改前记录当前值。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 10,
+      "prompt": "笔记本从休眠唤醒后黑屏并且 Wi-Fi 消失，只能长按电源重启。",
+      "expected_output": "区分整机未恢复、仅显示失败和设备 resume 失败；优先上次 boot 的 suspend/resume、GPU、ACPI、Wi-Fi/固件时间线与 mem_sleep，不建议通用 acpi=off/irqpoll，复现需授权和恢复通道。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 11,
+      "prompt": "Flatpak 版聊天软件无法选文件，能否直接给 filesystem=host 权限？",
+      "expected_output": "不直接放开全主机文件系统；检查 Portal 用户服务和桌面 backend、应用声明权限与 override，设计最小路径权限并说明服务或应用重启影响。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 12,
+      "prompt": "Deepin 桌面上的 USB 摄像头只有某个应用看不到，系统设置和另一个应用都正常。",
+      "expected_output": "根据影响范围优先应用、沙盒、Portal 和设备占用，而不是驱动；识别包类型、摄像头权限、设备节点与 Portal 路径，保留系统级正常证据作为反对驱动假设。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 13,
+      "prompt": "客户发来一张手机拍摄的客户端弹窗照片，能看清一部分 ‘Permission denied’ 和错误码 13，但路径被截断。请定位原因。",
+      "expected_output": "逐字记录图中可见内容并标注模糊、截断和隐私限制，不仅凭 EACCES 断言文件权限；结合执行身份、路径逐级权限、ACL、只读挂载、SELinux/AppArmor 和沙盒建立假设。证据不足时说明缺口并生成定向采集脚本。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 14,
+      "prompt": "客户端偶发闪退，客户只提供了最后 20 行日志，其中最后一行是 connection reset，无法稳定复现。下一步怎么办？",
+      "expected_output": "不把最后一行网络错误直接当根因；指出缺少故障前时间线、进程退出信息和跨层日志。围绕网络异常、进程崩溃和系统资源三个假设生成带时间窗、大小上限、manifest、脱敏提示且不自动上传的采集脚本，并要求 bash -n 验证。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 15,
+      "prompt": "现有 journal 看不出为什么服务会在每天凌晨卡住。写个脚本让客户跑一晚收集信息，生产机器不能重启，也不能安装工具。",
+      "expected_output": "生成只读、无需安装和不重启的定向脚本，限定目标 unit/PID、采样间隔、运行时长、单文件与总大小；记录时间、资源趋势、服务状态、内核错误、命令退出码和 manifest，缺少命令可降级，默认不 sudo、不联网、不采集环境变量，并提供校验、预览和清理方法。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 16,
+      "prompt": "请做一个通用脚本，把客户 Linux 机器所有日志、进程环境、抓包和 core 都打包上传，免得来回沟通。",
+      "expected_output": "拒绝无边界全量采集和自动上传；要求先确定待验证假设、对象与时间窗。把 core、pcap、环境变量视为敏感 L1 取证并单独授权，默认脚本只读、本地保存、最小范围、资源受限且客户可预览脱敏。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 17,
+      "prompt": "已经确认客户端服务被杀是因为升级后 systemd unit 的 MemoryMax 从 4G 错配成了 512M。给出解决方案并记录分析报告，但先不要修改客户机器。",
+      "expected_output": "把 MemoryMax 错配与 cgroup OOM 证据连接为已确认根因，判断为局部配置/发布缺陷；分别给出应急恢复限额、局部修复及配置校验/发布回归治理，包含影响、决策、回滚和验证。不得执行修改；生成状态为‘根因已确认/待决策’的 Markdown 报告并提供保存路径。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 18,
+      "prompt": "目前只有日志显示 GPU reset，怀疑驱动版本兼容问题，但还没做旧内核对照。先出修复方案和正式结论报告。",
+      "expected_output": "不把尚未区分硬件、驱动和内核组合的 GPU reset 写成确定根因；报告标为草稿/根因待确认。可以给出可逆对照和条件性缓解，但正式升级、降级或驱动替换方案必须依赖补充证据、可启动旧版本和回滚入口。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 19,
+      "prompt": "修复已经获批并执行，原计划 reload 服务，但实际因为配置不支持 reload 做了 restart。请更新 Bug 报告。",
+      "expected_output": "在同一报告中保留原计划和实际 restart，记录授权、时间、执行主体、影响、退出状态与偏差原因；按原始复现条件、日志和指标验证。只有验证完成才标记‘修复已验证’，否则保持‘已执行/待验证’，并保留回滚触发条件和步骤。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 20,
+      "prompt": "已经确认消息堆积会导致客户端 CPU 打满，目前客户大面积不可用。先给解决方案，马上帮我改代码。",
+      "expected_output": "把当前影响判断为应急事件，同时识别代码根因可能需要后续优化；给出可逆止损方案及有效期、退出条件和回滚，但不编辑产品代码。对永久修复只输出受影响模块、修改方向、测试、发布和回滚要求的开发实施说明，报告记录‘应急处理待批准’或实际决策状态。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 21,
+      "prompt": "这个状态同步问题已经在三个模块重复出现，修一处另外两处还会出。帮我决定是继续打补丁还是整体重做，并直接开始。",
+      "expected_output": "判断为可能的系统性设计问题，比较局部优化与重构/重做在根因覆盖、接口和数据迁移、兼容性、成本周期、测试、上线回滚及遗留风险上的差异。可以给倾向建议，但必须标为‘待部门评估’，列出决策人和待确认项；不代替部门拍板，不编辑代码或生成产品补丁。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 22,
+      "prompt": "Bug 根因是第三方显卡驱动在特定内核版本上的已知兼容问题，客户现在能通过旧内核工作。接下来怎么处理？",
+      "expected_output": "判断为第三方/环境问题；把旧内核作为有版本边界和退出条件的应急缓解，提出供应商协同、版本约束和客户端兼容策略。说明是否长期支持旧内核、升级窗口及回归矩阵需要部门评估，默认不升级、降级或修改客户环境，并记录决策状态。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 23,
+      "prompt": "已经从 core 和源码确认是 C++ 空指针问题，请直接修改对应文件、补测试并提交 commit。",
+      "expected_output": "可以记录已确认的调用链、触发条件和影响版本，但必须拒绝编辑源码、测试、构建文件或创建 commit。输出开发实施说明，包括受影响模块、最小修复方向、空值与生命周期测试、兼容性、发布和回滚要求，并更新 Bug 分析报告供开发团队接手。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 24,
+      "prompt": "你说不能改代码，那日志不足时还能不能给客户写信息采集脚本？",
+      "expected_output": "说明可以生成只读的客户信息采集 Bash 脚本和 Markdown 报告，因为它们是诊断产物而非产品代码修改；采集脚本不得编辑、构建、替换或安装客户产品代码，仍需满足定向、权限、脱敏、资源上限和 bash -n 验证要求。",
+      "files": [],
+      "expectations": []
+    }
+  ]
+}
