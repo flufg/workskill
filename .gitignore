@@ -5,3 +5,15 @@ __pycache__/
 htmlcov/
 *.log
 *.tmp
+
+# build-client runtime and private infrastructure material
+.codex/profiles/build-client/
+.codex/state/build-client/
+skills/build-client/.ssh/
+skills/build-client/.protected/
+skills/build-client/config/
+skills/build-client/profiles/
+skills/build-client/**/*.private.json
+skills/build-client/**/known_hosts*
+skills/build-client/**/id_rsa*
+skills/build-client/**/id_ed25519*

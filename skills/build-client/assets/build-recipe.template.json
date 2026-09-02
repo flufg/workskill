@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "recipeId": "example-linux-client",
+  "displayName": "Example Linux client build recipe",
+  "runner": {
+    "type": "bash-stdin",
+    "scriptRef": "provider:profile/remote-build.sh",
+    "expectedSha256": "04d0b1db32bbc9c410c092328cc1aecdef18c2de47b2af1a92e4e063e86ec2cd"
+  },
+  "scopes": {
+    "check-env": {
+      "description": "Validate the remote toolchain without building an artifact",
+      "expectedArtifactCount": 0,
+      "execution": "remote-non-gui"
+    },
+    "example-component": {
+      "description": "Build one fictional example component",
+      "expectedArtifactCount": 1,
+      "execution": "remote-non-gui"
+    }
+  },
+  "shareable": true,
+  "containsSecrets": false
+}

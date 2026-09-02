@@ -53,6 +53,21 @@ Changes to access-channel rules, collection scripts, or customer-data handling
 must preserve the per-case authorization boundary and must not introduce a
 persistent customer environment registry.
 
+From `skills/build-client` run:
+
+```bash
+python -m unittest discover -s scripts -p 'test_*.py'
+python scripts/profile_manager.py validate \
+  --environment assets/environment-profile.template.json \
+  --recipe assets/build-recipe.template.json
+```
+
+Also scan the complete package for private keys, known-host entries, real machine
+addresses, personal paths, internal component or artifact names, credential
+values, and organization-only provider logic. Only fictional templates belong in
+the public package. Real Profiles and provider scripts must stay outside the
+repository.
+
 ## License for contributions
 
 By submitting a contribution, you agree that it is your original work or that

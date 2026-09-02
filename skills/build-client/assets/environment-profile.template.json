@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 2,
+  "bindingId": "example-centos-build",
+  "displayName": "Example CentOS build environment",
+  "scope": "example-project",
+  "fingerprint": "example-environment-v1",
+  "toolchainProfile": "example-linux-client-toolchain",
+  "capabilities": ["build", "test", "vm-power", "gui"],
+  "shareable": true,
+  "nodes": [
+    {
+      "nodeId": "vmware-controller",
+      "roles": ["power", "gui"],
+      "platform": "windows",
+      "fingerprint": "example-vmware-controller-v1",
+      "accessRef": "provider:current-windows-user",
+      "privilegeRef": null,
+      "credentialRefs": {},
+      "capabilities": ["status", "start", "gui-console", "soft-stop", "soft-restart"],
+      "provider": {
+        "kind": "vmware-workstation",
+        "managementHost": "localhost",
+        "queueResource": "lab:example-linux-build",
+        "vmIdentity": "vmware-workstation:example-centos-build",
+        "vmrunPath": "C:\\Program Files (x86)\\VMware\\VMware Workstation\\vmrun.exe",
+        "workstationGuiPath": "C:\\Program Files (x86)\\VMware\\VMware Workstation\\vmware.exe",
+        "vm": {
+          "displayName": "Example_CentOS_Build",
+          "vmxPath": "C:\\VMs\\Example_CentOS_Build\\Example_CentOS_Build.vmx",
+          "guestOs": "centos7-64",
+          "expectedUuid": "56 4d 00 00 00 00 00 00-00 00 00 00 00 00 00 01",
+          "expectedMac": "00:50:56:00:00:01",
+          "expectedIpv4": "192.0.2.10"
+        },
+        "timeouts": {
+          "commandSeconds": 30,
+          "powerOnSeconds": 180,
+          "powerOffSeconds": 180,
+          "sshReadySeconds": 180,
+          "queueWaitSeconds": 300
+        },
+        "receipt": {
+          "maxAgeSeconds": 300
+        }
+      }
+    },
+    {
+      "nodeId": "linux-guest",
+      "roles": ["build", "test"],
+      "platform": "linux",
+      "fingerprint": "example-linux-guest-v1",
+      "accessRef": "protected:profile/ssh-key",
+      "privilegeRef": null,
+      "credentialRefs": {
+        "ssh": "protected:profile/ssh-key",
+        "knownHosts": "protected:profile/known-hosts",
+        "redis": "protected:credential-manager/example-build-client-redis"
+      },
+      "capabilities": ["read", "execute", "copy"],
+      "provider": {
+        "kind": "ssh",
+        "host": "192.0.2.10",
+        "port": 22,
+        "user": "builder",
+        "queueResource": "lab:example-linux-build",
+        "vmIdentity": "vmware-workstation:example-centos-build",
+        "hostKey": {
+          "policy": "managed",
+          "strictChecking": true,
+          "expectedSha256": "SHA256:examplePublicHostKeyFingerprint"
+        },
+        "identity": {
+          "type": "ssh-host-key-and-machine-id",
+          "expectedMachineIdSha256": ""
+        },
+        "timeouts": {
+          "connectSeconds": 15,
+          "preflightSeconds": 30,
+          "commandSeconds": 3600,
+          "queueWaitSeconds": 300
+        },
+        "receipt": {
+          "maxAgeSeconds": 300
+        }
+      }
+    }
+  ],
+  "evidencePolicy": {
+    "location": "run-scoped external evidence directory",
+    "encoding": "UTF-8",
+    "decisionFormat": "JSON",
+    "locale": "C.UTF-8"
+  },
+  "containsSecrets": false
+}
