@@ -1,0 +1,4 @@
+interface:
+  display_name: "工作文档上传飞书知识库"
+  short_description: "绑定知识库，整理成可供审阅的方案或报告后归档到 Wiki"
+  default_prompt: "使用 $work-document-to-feishu 审查这份工作文档，在不更改语义和逻辑的前提下整理成可供领导或同事审阅的方案或报告，检查矛盾与冗余，然后上传到已绑定的飞书知识库。"

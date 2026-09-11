@@ -17,3 +17,6 @@ skills/build-client/**/*.private.json
 skills/build-client/**/known_hosts*
 skills/build-client/**/id_rsa*
 skills/build-client/**/id_ed25519*
+
+# work-document-to-feishu local wiki binding
+skills/work-document-to-feishu/config/wiki-target.json

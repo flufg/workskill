@@ -1,0 +1,61 @@
+{
+  "skill_name": "work-document-to-feishu",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "把这份周报上传到飞书知识库。我还没绑定过知识库，这是页面链接：https://feishu.cn/wiki/wikcnExampleParent。先绑定再上传。",
+      "expected_output": "先 wiki +node-get 解析 space_id，写入 config/wiki-target.json，再保存该页的 node_token 作为默认父节点；未完成绑定和审查前不调用 node-create、import、upload 或 move。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "配置里已经有 space_id 和 default_parent_node_token。请把 docs/weekly.md 传到知识库。文里有两处截止日期，一处写 8/20，一处写 8/27。",
+      "expected_output": "使用已保存绑定，不再询问知识库；先做矛盾检查并阻断上传，把两处日期冲突交给用户裁决，确认前不调用写入命令。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "帮我把方案整理一下再上传。可以润色，但别改结论。第二节和第四节是同一段复制。文里还有一长串不要重启、不要改配置。",
+      "expected_output": "整理成可供审阅的方案或报告，使用书面标题，不改成「要做什么」；删除重复段落；把「不要重启/不要改配置」当冗余删除，不改写成注意事项。不改结论，确认前不上传。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 4,
+      "prompt": "直接把这份 PDF 上传到我的空间根目录就行。",
+      "expected_output": "拒绝退化为 Drive/我的空间；若未绑定则先绑定知识库 space_id 和父节点，PDF 作为附件走 drive +upload --wiki-token，不传到云空间根目录。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 5,
+      "prompt": "知识库名字叫工程文档库，把会议纪要上传到根目录。",
+      "expected_output": "用 wiki +space-list 按名称解析 space_id，命中多条时列出候选等用户选；父节点留空表示根目录；先审查纪要再 wiki +node-create --space-id，不把名称当 space_id。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 6,
+      "prompt": "审查后直接上传。把整理好的 Markdown 放到已绑定的父页面下面。",
+      "expected_output": "仍先输出审查报告；本轮可视为已授权上传。随后 wiki +node-create 使用已保存 space_id 与 parent node_token，再用 docs +update 写入整理稿，并把新 node_token 追加到 config。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 7,
+      "prompt": "这是开发文档：标题写成「要做什么」是实现登录。后面写了不要把密码写进日志、不要在前端存 token，步骤里已经写了日志脱敏和只把 token 放内存。整理后上传。",
+      "expected_output": "把口语标题改为「目标」或「实施方案」等书面标题，保留登录方案及已有步骤（含日志脱敏、token 放内存）。两条「不要 xxx」删除，不写成「要做什么」或「注意什么」。",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 8,
+      "prompt": "方案里用一张三列表把「第一步备份、第二步切换、第三步验证」排成表格，另外有一段把三个环境的节点、角色、指纹写成三个长段落。整理后上传。",
+      "expected_output": "有序步骤从表改回有序列表；三个环境因共享节点/角色/指纹字段而收成对照表。审查报告写明表格取舍，不增补原文没有的列。",
+      "files": [],
+      "expectations": []
+    }
+  ]
+}

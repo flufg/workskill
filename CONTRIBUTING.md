@@ -68,6 +68,12 @@ values, and organization-only provider logic. Only fictional templates belong in
 the public package. Real Profiles and provider scripts must stay outside the
 repository.
 
+For `skills/work-document-to-feishu`, validate `SKILL.md` frontmatter, parse
+`evals/evals.json`, check that every linked reference exists, and confirm
+`config/wiki-target.json` is not committed. Scan the package for real wiki
+tokens, tenant hostnames, personal paths, and credential values. Templates may
+only use placeholders such as `<SPACE_ID>` and `wikcnExampleParent`.
+
 ## License for contributions
 
 By submitting a contribution, you agree that it is your original work or that
