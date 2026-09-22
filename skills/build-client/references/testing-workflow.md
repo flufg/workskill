@@ -36,6 +36,12 @@ measurable pass criteria, bounded command or direct-console action, fixture and
 cleanup plan. Performance work requires explicit confirmation of the target and
 load bounds.
 
+When the selected private provider uses a disposable workspace, resolve exactly
+one declared source mapping, recreate only the exact disposable workspace, and
+run every build/test command there. Treat the source and its synchronization as
+read-only external inputs. Preserve the workspace through failures, diagnosis,
+retries, and user review.
+
 Claim the shared queue, read identity again, issue a fresh receipt, execute only
 the admitted action, verify target/artifact state, verify cleanup, read identity
 again, write evidence, then release the queue. An accepted command, existing
@@ -45,6 +51,12 @@ Use only `NOT_RUN`, `PASS`, `FAIL`, and `ENV_UNAVAILABLE`. Capture timestamps,
 Profile/recipe/provider hashes, queue owner and release state, receipt, identity,
 exit and timeout state, decisive output/screenshots, artifact hashes, metrics,
 cleanup readback, and uncovered risk.
+
+After the user accepts the result and ends the test task, ask again immediately
+before invoking the separately declared cleanup scope. Record its exact-path
+guard and `WORKSPACE_CLEANUP_READBACK ... absent=true`. Do not infer cleanup
+authorization from the original test request, a passing result, acceptance, or
+the presence of an old workspace.
 
 ## Failure handling
 

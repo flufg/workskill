@@ -122,6 +122,12 @@ class VmwareClientTests(unittest.TestCase):
         self.assertNotIn("nohup", provider)
         self.assertNotIn("DISPLAY=", provider)
         self.assertNotIn("vmware", provider.lower())
+        self.assertIn('[[ "$WORKSPACE_ROOT" == "/srv/example-client/workspace" ]]', provider)
+        self.assertIn('cp -R -- "$SOURCE_ROOT/." "$WORKSPACE_ROOT/"', provider)
+        self.assertIn('WORKSPACE_READY source=example-source', provider)
+        self.assertIn('WORKSPACE_CLEANUP_READBACK path=%s absent=true', provider)
+        self.assertIn('[[ ! -e "$WORKSPACE_ROOT" && ! -L "$WORKSPACE_ROOT" ]]', provider)
+        self.assertNotIn('rm -rf -- "$SOURCE_ROOT"', provider)
 
 
 if __name__ == "__main__":

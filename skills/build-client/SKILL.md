@@ -18,7 +18,8 @@ does not authorize another action.
 
 Build and test authorization never authorizes commit, amend, rebase, tag, push,
 release, deployment, hard stop, snapshot, unrelated restart, dependency install,
-or configuration repair. Ask again immediately before any later Git push.
+configuration repair, or disposal of a retained build/test workspace. Ask again
+immediately before any later Git push or workspace cleanup.
 
 A build may start a stopped VM only for the requested action and must restore the
 original stopped state with a verified soft shutdown. Leave an initially running
@@ -65,6 +66,16 @@ a GUI, and emit one verified line per artifact:
 
 The expected count comes from the selected scope. Missing artifact evidence is a
 failed build even when the command exits successfully.
+
+When the private recipe/provider uses a disposable workspace, keep concrete
+source and workspace paths private. Recreate only the provider's exact disposable
+workspace before the admitted build/test, never mutate its source tree, and keep
+the workspace after execution for diagnosis and result review. Cleanup must be a
+separately declared zero-artifact scope. A successful test, result acceptance, or
+request to end the task does not authorize cleanup: obtain a separate immediate
+confirmation, require exact-path and absence checks in the provider, and capture
+the cleanup readback. See
+[references/build-recipe.md](references/build-recipe.md).
 
 For build-only requests, read
 [references/build-recipe.md](references/build-recipe.md) and

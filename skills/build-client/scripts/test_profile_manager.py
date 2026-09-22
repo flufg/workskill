@@ -29,6 +29,8 @@ class ProfileManagerTests(unittest.TestCase):
         recipe = PM.load_json(assets / "build-recipe.template.json")
         self.assertEqual([], PM.validate_environment(environment))
         self.assertEqual([], PM.validate_recipe(recipe))
+        self.assertEqual(0, recipe["scopes"]["prepare-workspace"]["expectedArtifactCount"])
+        self.assertEqual(0, recipe["scopes"]["cleanup-workspace"]["expectedArtifactCount"])
 
     def test_secret_bearing_fields_are_rejected(self) -> None:
         assets = SCRIPT.parent.parent / "assets"

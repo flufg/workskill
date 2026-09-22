@@ -5,7 +5,7 @@
   "runner": {
     "type": "bash-stdin",
     "scriptRef": "provider:profile/remote-build.sh",
-    "expectedSha256": "04d0b1db32bbc9c410c092328cc1aecdef18c2de47b2af1a92e4e063e86ec2cd"
+    "expectedSha256": "18aa5807ded4c9ddec1509ee423cdfaa733675be7dfd1a0e49e6cbb2c1c6cf2a"
   },
   "scopes": {
     "check-env": {
@@ -13,9 +13,19 @@
       "expectedArtifactCount": 0,
       "execution": "remote-non-gui"
     },
+    "prepare-workspace": {
+      "description": "Recreate one fictional disposable workspace from its selected private source mapping",
+      "expectedArtifactCount": 0,
+      "execution": "remote-non-gui"
+    },
     "example-component": {
       "description": "Build one fictional example component",
       "expectedArtifactCount": 1,
+      "execution": "remote-non-gui"
+    },
+    "cleanup-workspace": {
+      "description": "Delete the exact fictional disposable workspace after separate immediate confirmation",
+      "expectedArtifactCount": 0,
       "execution": "remote-non-gui"
     }
   },
